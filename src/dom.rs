@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 use crate::dom;
 
@@ -57,6 +57,19 @@ impl std::fmt::Display for NodeType {
 pub struct ElementData {
     pub tag_name: String,
     pub attributes: AttrMap,
+}
+
+impl ElementData {
+    pub fn id(&self) -> Option<&String> {
+        self.attributes.get("id")
+    }
+
+    pub fn classes(&self) -> HashSet<&str> {
+        match self.attributes.get("class") {
+            Some(class_list) => class_list.split(' ').collect(),
+            None => HashSet::new(),
+        }
+    }
 }
 
 pub type AttrMap = HashMap<String, String>;
