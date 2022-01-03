@@ -15,6 +15,31 @@ pub struct StyledNode<'a> {
     pub children: Vec<StyledNode<'a>>,
 }
 
+pub enum Display {
+    Inline,
+    Block,
+    None,
+}
+
+impl StyledNode<'_> {
+    // Return the specified value of a property if it exists, otherwise `None`.
+    pub fn value(&self, name: &str) -> Option<Value> {
+        self.specified_values.get(name).cloned()
+    }
+
+    // The value of the `display` property (defaults to inline)
+    pub fn display(&self) -> Display {
+        match self.value("display") {
+            Some(Value::Keyword(s)) => match &*s {
+                "block" => Display::Block,
+                "none" => Display::None,
+                _ => Display::Inline,
+            },
+            _ => Display::Inline,
+        }
+    }
+}
+
 // Apply a stylesheet to an entire DOM tree, returning a StyleNode tree
 pub fn style_tree<'a>(root: &'a Node, stylesheet: &'a StyleSheet) -> StyledNode<'a> {
     StyledNode {
